@@ -12,7 +12,7 @@ def open_and_read_file(file_path):
 
     with open(file_path) as text_file:
         long_text = text_file.read()
-        long_text = long_text.replace("\n", " ")
+        #long_text = long_text.replace("\n", " ")
         #words = long_text.split()
 
     return long_text
@@ -62,8 +62,22 @@ def make_text(chains):
     """Return text from chains."""
 
     words = []
+    start_key = choice(chains.keys())
+    words.extend(start_key)
+    new_key = start_key
 
-    # your code goes here
+    while True:
+        combo_list = chains[new_key]
+        transition = choice(combo_list)
+
+        if transition is None:
+            break
+
+        words.append(transition)
+        new_key = (new_key[1], transition)
+
+        # if new_key not in chains:
+        #     break
 
     return " ".join(words)
 
@@ -79,4 +93,4 @@ chains = make_chains(input_text)
 # Produce random text
 random_text = make_text(chains)
 
-print input_text
+print random_text

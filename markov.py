@@ -10,13 +10,21 @@ def open_and_read_file(file_path):
     Takes a string that is a file path, opens the file, and turns
     the file's contents as one string of text.
     """
+    long_text = ""
 
-    with open(file_path) as text_file:
-        long_text = text_file.read()
-        #long_text = long_text.replace("\n", " ")
-        #words = long_text.split()
+    for f in file_path:
+        with open(f) as text_file:
+            long_text += text_file.read()
+            #long_text = long_text.replace("\n", " ")
+            #words = long_text.split()
 
     return long_text
+
+
+def combine_strings(text1, text2):
+    """ Concatenate text (string) from two files. """
+
+    return text1 + text2
 
 
 def make_chains(text_string, n_grams):
@@ -64,7 +72,7 @@ def make_text(chains, n_grams):
     """Return text from chains."""
 
     words = []
-    start_key = choice(chains.keys())
+    start_key = pull_cap(chains)
     words.extend(start_key)
     new_key = start_key
 
@@ -72,7 +80,10 @@ def make_text(chains, n_grams):
         combo_list = chains[new_key]
         transition = choice(combo_list)
 
-        if transition is None:
+        if (transition is None):
+            break
+        elif (end_punc(transition) is True):
+            words.append(transition)
             break
 
         words.append(transition)
@@ -86,9 +97,31 @@ def make_text(chains, n_grams):
     return " ".join(words)
 
 
-input_path = "gettysburg.txt"
+def pull_cap(chains):
+    """ Generates start key until first word is capitalized. """
+    while True:
+        start_key = choice(chains.keys())
 
-n_grams = 5
+        if start_key[0].title() == start_key[0]:
+            return start_key
+
+
+def end_punc(transition):
+    """Determines if value ends in (. ! ?)"""
+    punctuation = set([".", "!", "?"])
+
+    #last_word = new_key[-1]
+
+    if transition[-1] in punctuation:
+        return True
+    else:
+        return False
+
+
+input_path = sys.argv[1:]
+#sys.argv is a list of files (e.g., python markov.py green-eggs.txt gettysburg.txt)
+
+n_grams = 2
 
 # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
